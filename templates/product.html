@@ -1,0 +1,98 @@
+<!-- templates/product.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ product.name }} – Sweet Bites</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+<!-- Navigation bar -->
+<nav class="navbar">
+    <div class="brand">🍪 Sweet <span>Bites</span></div>
+    <div class="nav-links">
+        <a href="{{ url_for('home') }}">Shop</a>
+        <a href="{{ url_for('cart') }}" class="cart-link">🛒 My Cart</a>
+        <a href="{{ url_for('logout') }}">Logout</a>
+    </div>
+</nav>
+
+<div class="page">
+
+    <!-- Flash messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="flash-messages" style="margin-bottom:1rem;">
+                {% for category, message in messages %}
+                    <div class="flash {{ category }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <!-- Back button -->
+    <a href="{{ url_for('home') }}" class="back-link">← Back to Shop</a>
+
+    <!-- Product detail layout -->
+    <div class="product-detail">
+
+        <!-- Left: image -->
+        <div>
+            {% if product.image_url %}
+                <img src="{{ product.image_url }}" alt="{{ product.name }}"
+                     onerror="this.outerHTML='<div style=\'background:var(--parchment);border-radius:14px;height:300px;display:flex;align-items:center;justify-content:center;font-size:5rem;\'>🍪</div>'">
+            {% else %}
+                <div style="background:var(--parchment);border-radius:14px;height:300px;display:flex;align-items:center;justify-content:center;font-size:5rem;">🍪</div>
+            {% endif %}
+        </div>
+
+        <!-- Right: info + actions -->
+        <div class="product-info">
+            <h1 class="product-name">{{ product.name }}</h1>
+            <div class="product-price">${{ "%.2f"|format(product.price) }}</div>
+            <p class="product-desc">{{ product.description }}</p>
+
+            <!-- ── Add to Cart form ── -->
+            <form method="POST" action="{{ url_for('add_to_cart', product_id=product._id) }}"
+                  id="cart-form">
+                <div class="qty-row">
+                    <label for="quantity">Quantity:</label>
+                    <input type="number" id="quantity" name="quantity"
+                           value="1" min="1" max="99" class="qty-input">
+                </div>
+
+                <div class="btn-row">
+                    <button type="submit" class="btn btn-outline">
+                        🛒 Add to Cart
+                    </button>
+                </div>
+            </form>
+
+            <!-- ── Buy Now form (separate so it posts to a different URL) ── -->
+            <form method="POST" action="{{ url_for('buy_now', product_id=product._id) }}"
+                  id="buy-form" style="margin-top:.6rem;">
+                <!-- Hidden quantity that mirrors the visible input above -->
+                <input type="hidden" name="quantity" id="buy-qty" value="1">
+                <div class="btn-row">
+                    <button type="submit" class="btn btn-primary">
+                        ⚡ Buy Now
+                    </button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+
+</div><!-- /page -->
+
+<script>
+    /* Keep the Buy Now form quantity in sync with the visible qty input */
+    document.getElementById('quantity').addEventListener('input', function () {
+        document.getElementById('buy-qty').value = this.value;
+    });
+</script>
+
+</body>
+</html>

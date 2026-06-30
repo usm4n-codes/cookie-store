@@ -1,0 +1,91 @@
+<!-- templates/home.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sweet Bites – Our Cookies</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+<!-- ── Navigation bar ── -->
+<nav class="navbar">
+    <div class="brand">🍪 Sweet <span>Bites</span></div>
+    <div class="nav-links">
+        <span style="color:var(--parchment); font-size:.9rem;">
+            Hi, {{ session.username }}!
+        </span>
+        <a href="{{ url_for('cart') }}" class="cart-link">🛒 My Cart</a>
+        <a href="{{ url_for('logout') }}">Logout</a>
+    </div>
+</nav>
+
+<div class="page">
+
+    <!-- Flash messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="flash-messages">
+                {% for category, message in messages %}
+                    <div class="flash {{ category }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <!-- Hero banner -->
+    <div class="home-hero">
+        <div>
+            <h1>Fresh Cookies, Every Day </h1>
+            <p>Browse our handcrafted selection and order your favourites.</p>
+        </div>
+        <div class="hero-emoji">🍪</div>
+    </div>
+
+    <p class="page-subtitle">{{ products|length }} cookie{{ 's' if products|length != 1 }} available</p>
+
+    <!-- Product grid -->
+    {% if products %}
+        <div class="product-grid">
+            {% for product in products %}
+            <div class="product-card">
+
+                <!-- Cookie image (or emoji fallback) -->
+                {% if product.image_url %}
+                    <img src="{{ product.image_url }}" alt="{{ product.name }}"
+                         class="card-img" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+                    <div class="card-img-placeholder" style="display:none;">🍪</div>
+                {% else %}
+                    <div class="card-img-placeholder">🍪</div>
+                {% endif %}
+
+                <div class="card-body">
+                    <div class="card-name">{{ product.name }}</div>
+                    <div class="card-desc">{{ product.description }}</div>
+
+                    <div class="card-footer">
+                        <div class="price-tag">${{ "%.2f"|format(product.price) }}</div>
+                        <a href="{{ url_for('product_detail', product_id=product._id) }}"
+                           class="btn btn-primary btn-sm">
+                           View Product
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+            {% endfor %}
+        </div>
+
+    {% else %}
+        <!-- No products yet -->
+        <div class="empty-cart">
+            <div class="empty-icon">🍪</div>
+            <h3>No cookies yet!</h3>
+            <p>Check back soon — something delicious is on the way.</p>
+        </div>
+    {% endif %}
+
+</div><!-- /page -->
+</body>
+</html>

@@ -1,0 +1,59 @@
+<!-- templates/register.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register – Sweet Bites</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+<div class="auth-wrapper">
+    <div class="auth-card">
+
+        <div class="auth-logo">
+            <span class="cookie-icon">🍪</span>
+            Sweet Bites
+        </div>
+        <p class="auth-tagline">Join our cookie family!</p>
+
+        <h2>Create Account</h2>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash {{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <form method="POST" action="{{ url_for('register') }}">
+
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username"
+                       placeholder="Choose a username" required autofocus>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password"
+                       placeholder="Choose a password" required>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-full" style="margin-top:.5rem;">
+                Create Account
+            </button>
+        </form>
+
+        <p style="margin-top:1.4rem; font-size:.9rem; color:var(--text-light);">
+            Already have an account?
+            <a href="{{ url_for('login') }}">Log in</a>
+        </p>
+
+    </div>
+</div>
+
+</body>
+</html>

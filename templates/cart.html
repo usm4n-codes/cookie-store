@@ -1,0 +1,122 @@
+<!-- templates/cart.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Cart – Sweet Bites</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+<!-- Navigation bar -->
+<nav class="navbar">
+    <div class="brand">🍪 Sweet <span>Bites</span></div>
+    <div class="nav-links">
+        <a href="{{ url_for('home') }}">Shop</a>
+        <a href="{{ url_for('cart') }}" class="cart-link">🛒 My Cart</a>
+        <a href="{{ url_for('logout') }}">Logout</a>
+    </div>
+</nav>
+
+<div class="page">
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="flash-messages" style="margin-bottom:1rem;">
+                {% for category, message in messages %}
+                    <div class="flash {{ category }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <h1 class="page-title">🛒 My Cart</h1>
+
+    {% if cart_items %}
+
+        <!-- Cart table -->
+        <table class="cart-table">
+            <thead>
+                <tr>
+                    <th>Item</th>
+                    <th>Product</th>
+                    <th>Price</th>
+                    <th>Qty</th>
+                    <th>Subtotal</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in cart_items %}
+                <tr>
+                    <!-- Thumbnail -->
+                    <td>
+                        {% if item.product.image_url %}
+                            <img src="{{ item.product.image_url }}"
+                                 alt="{{ item.product.name }}"
+                                 class="cart-thumb"
+                                 onerror="this.outerHTML='<span style=\'font-size:2rem;\'>🍪</span>'">
+                        {% else %}
+                            <span style="font-size:2rem;">🍪</span>
+                        {% endif %}
+                    </td>
+
+                    <!-- Name -->
+                    <td>
+                        <strong>{{ item.product.name }}</strong>
+                    </td>
+
+                    <!-- Unit price -->
+                    <td>${{ "%.2f"|format(item.product.price) }}</td>
+
+                    <!-- Quantity -->
+                    <td>{{ item.quantity }}</td>
+
+                    <!-- Subtotal -->
+                    <td><strong>${{ "%.2f"|format(item.subtotal) }}</strong></td>
+
+                    <!-- Remove button -->
+                    <td>
+                        <a href="{{ url_for('remove_from_cart', cart_id=item.cart_id) }}"
+                           class="btn btn-danger btn-sm"
+                           onclick="return confirm('Remove this item?')">
+                           Remove
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <!-- Total & checkout area -->
+        <div class="cart-total-box">
+            <div>
+                <div class="total-label">Order Total</div>
+                <div class="total-amount">${{ "%.2f"|format(total) }}</div>
+            </div>
+            <div style="display:flex; gap:1rem; flex-wrap:wrap;">
+                <a href="{{ url_for('home') }}" class="btn btn-outline">← Keep Shopping</a>
+                <!-- In a real project you'd link this to a checkout/payment page -->
+                <button class="btn btn-primary"
+                        onclick="alert('Checkout flow coming soon! 🍪')">
+                    Checkout →
+                </button>
+            </div>
+        </div>
+
+    {% else %}
+
+        <!-- Empty state -->
+        <div class="empty-cart">
+            <div class="empty-icon">🛒</div>
+            <h3>Your cart is empty</h3>
+            <p style="margin-bottom:1.5rem;">Looks like you haven't added any cookies yet.</p>
+            <a href="{{ url_for('home') }}" class="btn btn-primary">Browse Cookies</a>
+        </div>
+
+    {% endif %}
+
+</div><!-- /page -->
+</body>
+</html>
